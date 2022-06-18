@@ -1,12 +1,10 @@
-import json, os, re
+import json, os, re, time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.service import Service
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
-
-grades_path = f'{THIS_DIR}/grades.json'
 
 credentials_path = f'{THIS_DIR}/credentials.json'
 if not os.path.exists(credentials_path):
@@ -49,9 +47,13 @@ driver = webdriver.Chrome(service=chromedriver, options=options, desired_capabil
 
 driver.get(login_url)
 
+time.sleep(1)
+
 driver.find_element(by=By.ID, value='txtUsername').send_keys(username)
 driver.find_element(by=By.ID, value='txtPassword').send_keys(password)
 driver.find_element(by=By.ID, value='btnLogin').click()
+
+time.sleep(1)
 
 driver.get(grade_url)
 
@@ -69,6 +71,7 @@ for course_grade in re.findall(grade_pattern, driver.page_source, re.DOTALL):
     if grade not in grades.keys():
         grades[grade] = course
 
+grades_path = f'{THIS_DIR}/grades.json'
 if not os.path.exists(grades_path):
     with open(grades_path, 'w') as f:
         f.write('{}')
@@ -76,11 +79,15 @@ if not os.path.exists(grades_path):
 with open(grades_path, 'r') as f:
     prev_grades = json.load(f)
 
-if prev_grades != grades:
+if prev_grades == dict():
+    print('Initial run.')
+    with open(f'{THIS_DIR}/grades.json', 'w') as f:
+        json.dump(grades, f)
+elif prev_grades != grades:
     for key in grades.keys():
         if key not in prev_grades.keys():
             print(f'New course added: {key}', end=' ')
-            if grades[key] != '': print(f'with grade {grades[key]}')
+            if grades[key] != '': print(f'with grade {grades[key]}', end='')
             print('')
         elif prev_grades[key] != grades[key]:
             print(f'{key} grade changed to {grades[key]}')
