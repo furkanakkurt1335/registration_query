@@ -1,7 +1,6 @@
 import json, os, re, time
 from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -37,15 +36,13 @@ if username == 'Username':
 login_url = 'https://registration.boun.edu.tr/buis/Login.aspx'
 grade_url = 'https://registration.boun.edu.tr/scripts/stuinfar.asp'
 
-desired = DesiredCapabilities.CHROME
-
 options = ChromeOptions()
 options.add_argument('--headless')
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
 service = Service(ChromeDriverManager().install())
 
-driver = Chrome(service=service, options=options, desired_capabilities=desired)
+driver = Chrome(service=service, options=options)
 
 driver.get(login_url)
 
@@ -89,11 +86,14 @@ elif prev_grades != grades:
     for course_id in grades.keys():
         if course_id not in prev_grades:
             if grades[course_id]:
-                print('New course added: %s with grade %s' % (course_id, grades[course_id]))
+                print('New course with the ID %s and grade %s' % (course_id, grades[course_id]))
             else:
-                print('New course added: %s' % course_id)
+                print('New course with the ID %s' % course_id)
         elif prev_grades[course_id] != grades[course_id]:
-            print('Grade changed: %s from %s to %s' % (course_id, prev_grades[course_id], grades[course_id]))
+            if prev_grades[course_id]:
+                print('Grade of %s changed from %s to %s' % (course_id, prev_grades[course_id], grades[course_id]))
+            else:
+                print('Grade of %s changed from None to %s' % (course_id, grades[course_id]))
     with open(grades_path, 'w') as f:
         json.dump(grades, f, indent=4)
 
