@@ -41,7 +41,9 @@ options = ChromeOptions()
 options.add_argument('--headless')
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-service = Service(ChromeDriverManager().install())
+manager = ChromeDriverManager(cache_valid_range=30).install()
+
+service = Service(manager)
 
 driver = Chrome(service=service, options=options)
 
