@@ -88,13 +88,17 @@ for row in soup.find_all('tr'):
 
 grades_path = os.path.join(THIS_DIR, 'grades.json')
 if not os.path.exists(grades_path):
+    prev_grades = dict()
     with open(grades_path, 'w') as f:
-        json.dump(dict(), f)
-
-with open(grades_path, 'r') as f:
-    prev_grades = json.load(f)
+        json.dump(prev_grades, f)
+else:
+    with open(grades_path, 'r') as f:
+        prev_grades = json.load(f)
 
 sem_l = list(grades.keys())
+if len(sem_l) == 0:
+    print('No semester found.')
+    exit()
 sem_l.sort(reverse=True)
 latest_sem = sem_l[0]
 latest_grades = grades[latest_sem]
