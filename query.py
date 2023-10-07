@@ -5,6 +5,8 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
+print('Checking for updates in the registration system...')
+
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 
 credentials_path = os.path.join(THIS_DIR, 'credentials.json')
@@ -112,6 +114,8 @@ if prev_grades == dict():
     print('Grades:')
     for course_id in latest_grades:
         print('\t%s: %s' % (course_id, latest_grades[course_id]))
+elif latest_grades == latest_prev_grades:
+    print('No change in grades.')
 elif latest_grades != latest_prev_grades:
     for course_id in latest_grades:
         if course_id not in latest_prev_grades:
